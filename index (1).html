@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GbgProspects P16 — Min Fotboll</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#090d12;color:#e8edf3;font-family:Arial,Helvetica,sans-serif}
+header{background:#111720;border-bottom:1px solid #2a3541;padding:16px 4%;position:sticky;top:0;z-index:5}
+.logo{font-size:29px;font-weight:800;letter-spacing:-1px}.logo span{color:#57a9ff}
+.sub{color:#8d9aaa;margin-top:4px}nav{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px}
+button,.select{background:#19222c;color:#e5ebf1;border:1px solid #344150;border-radius:7px;padding:9px 13px;cursor:pointer}button.active{background:#255c8e}
+main{max-width:1280px;margin:auto;padding:25px 4%}section.hidden{display:none}
+.hero{background:linear-gradient(135deg,#121a23,#0d131a);border:1px solid #2b3846;border-radius:12px;padding:24px;margin-bottom:18px}
+h1{margin:0 0 7px;font-size:34px}h2{margin-top:0}.muted{color:#93a0ae}
+.search{width:100%;padding:12px;margin:15px 0;background:#0b1117;color:#fff;border:1px solid #354352;border-radius:7px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));gap:13px}.card{background:#121922;border:1px solid #293644;border-radius:10px;padding:16px}
+.tag{display:inline-block;padding:4px 8px;background:#1d3043;color:#8fc8ff;border-radius:5px;font-size:12px;margin:2px}
+.badge{display:inline-block;padding:4px 8px;background:#25301f;color:#b9d79e;border-radius:5px;font-size:11px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}.stat{background:#0b1117;padding:9px;text-align:center;border-radius:6px}.stat b{display:block;font-size:18px}
+.note{background:#101820;border-left:3px solid #57a9ff;padding:11px;margin:13px 0;color:#c2ccd6}
+table{width:100%;border-collapse:collapse;background:#111820;border-radius:9px;overflow:hidden}th,td{padding:10px;border-bottom:1px solid #293541;text-align:left}th{color:#9aa7b5;font-size:12px}
+.rowlocal{background:#151e27}.small{font-size:12px;color:#7e8c99}footer{border-top:1px solid #242e38;color:#75818e;padding:30px 4%;margin-top:30px}
+@media(max-width:650px){h1{font-size:27px}.stats{grid-template-columns:repeat(2,1fr)}}
+</style></head>
+<body>
+<header><div class="logo">Gbg<span>Prospects</span> P16</div><div class="sub">Min Fotboll-first • Göteborgsområdet • 2026</div>
+<nav>
+<button class="active" onclick="show('players',this)">Spelare</button>
+<button onclick="show('teams',this)">Lag</button>
+<button onclick="show('series',this)">Serier & tabeller</button>
+<button onclick="show('matches',this)">Matcher</button>
+<button onclick="show('about',this)">Källor</button>
+</nav></header>
+<main>
+<section id="players"><div class="hero"><h1>P16 – Spelare</h1><p class="muted">Prototyp med fiktiva P16-spelare från Göteborgsområdets klubbar.</p>
+<input class="search" id="q" placeholder="Sök spelare, klubb eller position..." oninput="renderPlayers()">
+<div class="note"><b>PROTOTYP:</b> Alla spelarnamn, födelseår och spelarpoäng på denna sida är fiktiva. Klubbnamnen används bara för att visa hur en färdig GbgProspects-sida kan se ut.</div></div><div class="card" style="margin-bottom:14px">
+<h2>Poängliga – demo</h2>
+<div id="leaderboard"></div>
+<p class="small">Fiktiv statistik • Poäng = mål + assist</p>
+</div><div id="playersGrid" class="grid"></div></section>
+
+<section id="teams" class="hidden"><div class="hero"><h1>Göteborgslag</h1><p class="muted">Endast lag från Göteborgsområdet visas här. Övriga lag finns i serier/tabeller.</p></div><div id="teamsGrid" class="grid"></div></section>
+
+<section id="series" class="hidden"><div class="hero"><h1>Serier & tabeller</h1><p class="muted">Alla lag i varje serie visas. Göteborgslag markeras, men lag från andra områden finns också med.</p></div><div id="seriesGrid"></div></section>
+
+<section id="matches" class="hidden"><div class="hero"><h1>Matcher</h1><p class="muted">Demo på hur matcher kan visas senare.</p></div>
+<div class="grid">
+<div class="card"><span class="badge">DEMO</span><h3>Qviding FIF 3–2 Torslanda IK</h3><p class="muted">Fiktivt resultat • P16</p></div>
+<div class="card"><span class="badge">DEMO</span><h3>IFK Göteborg 2–2 BK Häcken</h3><p class="muted">Fiktivt resultat • P16</p></div>
+<div class="card"><span class="badge">DEMO</span><h3>GAIS 1–0 Örgryte IS</h3><p class="muted">Fiktivt resultat • P16</p></div>
+</div></section>
+
+<section id="about" class="hidden"><div class="hero"><h1>Om prototypen</h1>
+<div class="card">
+<h3>Demo – inga riktiga spelarprofiler</h3>
+<p>Alla spelarnamn, födelseår, matcher, mål, assist, poäng och kort i spelarprofilerna är påhittade för att testa designen.</p>
+<p>Klubb- och serienamn används som struktur för prototypen. Tabellvärden ska ersättas med verifierad data innan en skarp version publiceras.</p>
+<p><b>Poäng:</b> 1 mål eller 1 assist = 1 poäng i prototypens spelarlista.</p>
+</div></div></section>
+</main>
+<footer>GbgProspects P16 • DEMO • fiktiva spelare och spelarpoäng • inte officiell statistik</footer>
+<script>
+const DATA={"players":[{"name":"Leo Berg","team":"BK Häcken","age":"2010","pos":"Anfallare","apps":18,"goals":14,"assists":7,"points":21,"cards":1,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Elias Norén","team":"IFK Göteborg","age":"2010","pos":"Mittfältare","apps":17,"goals":8,"assists":12,"points":20,"cards":3,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Noel Ekström","team":"GAIS","age":"2010","pos":"Anfallare","apps":18,"goals":11,"assists":6,"points":17,"cards":5,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Hugo Lind","team":"Örgryte IS Fotboll","age":"2010","pos":"Mittfältare","apps":16,"goals":7,"assists":9,"points":16,"cards":1,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Adam Vester","team":"Qviding FIF","age":"2010","pos":"Anfallare","apps":17,"goals":13,"assists":4,"points":17,"cards":3,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Milo Sand","team":"Torslanda IK","age":"2010","pos":"Mittfältare","apps":18,"goals":6,"assists":10,"points":16,"cards":5,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Oliver Gran","team":"Utsiktens BK","age":"2010","pos":"Anfallare","apps":15,"goals":10,"assists":5,"points":15,"cards":1,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Liam Dahl","team":"Önnereds IK","age":"2010","pos":"Mittfältare","apps":18,"goals":5,"assists":11,"points":16,"cards":3,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Albin Fors","team":"Ytterby IS","age":"2010","pos":"Anfallare","apps":17,"goals":9,"assists":6,"points":15,"cards":5,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Theo Alm","team":"Backatorp IF","age":"2010","pos":"Försvarare","apps":18,"goals":2,"assists":7,"points":9,"cards":1,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Viggo Ström","team":"Mölnlycke IS Ungdom","age":"2010","pos":"Anfallare","apps":16,"goals":8,"assists":5,"points":13,"cards":3,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Melvin Roos","team":"Kärra KIF","age":"2010","pos":"Mittfältare","apps":17,"goals":4,"assists":8,"points":12,"cards":5,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Isak Lund","team":"Gunnilse IS","age":"2010","pos":"Anfallare","apps":15,"goals":7,"assists":4,"points":11,"cards":1,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Nils Hammar","team":"IK Zenith","age":"2010","pos":"Mittfältare","apps":18,"goals":3,"assists":9,"points":12,"cards":3,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Axel Ryd","team":"Hovås Billdal IF","age":"2010","pos":"Försvarare","apps":17,"goals":1,"assists":6,"points":7,"cards":5,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Arvid Ek","team":"Guldhedens IK","age":"2010","pos":"Anfallare","apps":16,"goals":6,"assists":5,"points":11,"cards":1,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Samir Haddad","team":"Lärjedalens IS","age":"2010","pos":"Mittfältare","apps":18,"goals":5,"assists":6,"points":11,"cards":3,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Vincent Holm","team":"Mossens BK","age":"2010","pos":"Anfallare","apps":17,"goals":8,"assists":3,"points":11,"cards":5,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Malte Sjö","team":"SG Ruddalen IF","age":"2010","pos":"Mittfältare","apps":16,"goals":4,"assists":7,"points":11,"cards":1,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Oskar Nyberg","team":"Donsö IS","age":"2010","pos":"Försvarare","apps":15,"goals":2,"assists":4,"points":6,"cards":3,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"William Falk","team":"Styrsö BK","age":"2010","pos":"Anfallare","apps":17,"goals":7,"assists":3,"points":10,"cards":5,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Amir Saleh","team":"Finlandia Pallo AIF","age":"2010","pos":"Mittfältare","apps":18,"goals":5,"assists":8,"points":13,"cards":1,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Lucas Eng","team":"BK Häcken","age":"2010","pos":"Målvakt","apps":18,"goals":0,"assists":1,"points":1,"cards":3,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Charlie Blom","team":"IFK Göteborg","age":"2010","pos":"Försvarare","apps":17,"goals":2,"assists":5,"points":7,"cards":5,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Anton Vik","team":"GAIS","age":"2010","pos":"Målvakt","apps":18,"goals":0,"assists":0,"points":0,"cards":1,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Kevin Rask","team":"Örgryte IS Fotboll","age":"2010","pos":"Försvarare","apps":16,"goals":1,"assists":4,"points":5,"cards":3,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Edvin Mark","team":"Qviding FIF","age":"2010","pos":"Målvakt","apps":17,"goals":0,"assists":1,"points":1,"cards":5,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."},{"name":"Ibrahim Noor","team":"Utsiktens BK","age":"2010","pos":"Mittfältare","apps":18,"goals":6,"assists":7,"points":13,"cards":1,"source":"DEMO – helt fiktiv spelare och fiktiv statistik."}],
+"teams_local":["BK Häcken","Backatorp IF","Donsö IS","Finlandia Pallo AIF","GAIS","Guldhedens IK","Gunnilse IS","Hovås Billdal IF","IFK Göteborg","IK Zenith","Kärra KIF","Lärjedalens IS","Mossens BK","Mölnlycke IS Ungdom","Qviding FIF","SG Ruddalen IF","Styrsö BK","Torslanda IK","Utsiktens BK","Ytterby IS","Önnereds IK","Örgryte IS Fotboll"],
+"series":[
+{"name":"P16 Allsvenskan Mellersta","teams":["Boo FF","GAIS","Hammarby IF FF","Husqvarna FF","IF Elfsborg","IFK Haninge","IFK Norrköping FK","Nacka FC","Örebro SK FK","Örgryte IS Fotboll"]},
+{"name":"P16 Allsvenskan Södra","teams":["BK Häcken","BK Olympic","FC Rosengård 1917","Halmstads BK","Helsingborgs IF","IFK Göteborg","Landskrona BoIS","Malmö FF","Mjällby AIF","Östers IF"]},
+{"name":"P16 Div. 1 Västra Götaland","teams":["BK Astrio","Falkenbergs FF","IFK Fjärås","Kinna IF","Laholms FK","Mölnlycke IS Ungdom","Snöstorp Nyhem FF","Utsiktens BK","Varbergs BoIS FC","Önnereds IK"]},
+{"name":"P16 Div. 1 Norra Götaland","teams":["Gerdskens BK","Backatorp IF","IFK Uddevalla","IK Oddevold","Lidköpings FK","Norrby IF","Skara FC","Skövde AIK","Vänersborgs FK","Ytterby IS"]},
+{"name":"P16 09/10 Svår – Göteborg","teams":["Qviding FIF","Torslanda IK","Kärra KIF","Gunnilse IS","Lärjedalens IS","Mossens BK","SG Ruddalen IF","IK Zenith","Hovås Billdal IF","Guldhedens IK","Donsö IS","Styrsö BK","Finlandia Pallo AIF"]}
+],
+"standings":{
+"P16 Allsvenskan Södra":[
+{"team":"IFK Göteborg","gp":16,"w":12,"d":2,"l":2,"gf":60,"ga":25,"gd":35,"p":38,"status":"16 spelade; kommande matcher ej inräknade"},
+{"team":"BK Häcken","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Övriga lag","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"}
+],
+"P16 Allsvenskan Mellersta":[
+{"team":"GAIS","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Örgryte IS Fotboll","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"}
+],
+"P16 Div. 1 Västra Götaland":[
+{"team":"Mölnlycke IS Ungdom","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Utsiktens BK","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Önnereds IK","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"}
+],
+"P16 Div. 1 Norra Götaland":[
+{"team":"Backatorp IF","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Ytterby IS","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"}
+],
+"P16 09/10 Svår – Göteborg":[
+{"team":"Qviding FIF","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Torslanda IK","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Kärra KIF","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Gunnilse IS","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Lärjedalens IS","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Mossens BK","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"SG Ruddalen IF","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"IK Zenith","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Hovås Billdal IF","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Guldhedens IK","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Donsö IS","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Styrsö BK","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"},
+{"team":"Finlandia Pallo AIF","gp":"—","w":"—","d":"—","l":"—","gf":"—","ga":"—","gd":"—","p":"—","status":"Min Fotboll-data kunde inte verifieras offentligt i denna hämtning"}
+]}};
+function renderPlayers(){
+ let q=document.getElementById('q').value.toLowerCase();
+ let a=DATA.players.filter(p=>(p.name+' '+p.team+' '+p.pos).toLowerCase().includes(q)).sort((a,b)=>b.points-a.points);
+ document.getElementById('playersGrid').innerHTML=a.map(p=>`<div class="card"><h3>${p.name}</h3><span class="tag">${p.team}</span><span class="badge">P16</span><p><b>Ålder:</b> ${p.age} • <b>Position:</b> ${p.pos}</p><div class="stats"><div class="stat"><b>${p.apps}</b>Matcher</div><div class="stat"><b>${p.goals}</b>Mål</div><div class="stat"><b>${p.assists}</b>Assist</div><div class="stat"><b>${p.points}</b>Poäng</div></div><div class="small">${p.source}</div></div>`).join('') || '<div class="card"><p>Ingen spelare matchade sökningen.</p></div>';
+}
+function renderLeaderboard(){
+ const top=[...DATA.players].sort((a,b)=>b.points-a.points).slice(0,10);
+ document.getElementById('leaderboard').innerHTML=`<table><thead><tr><th>#</th><th>Spelare</th><th>Klubb</th><th>M</th><th>A</th><th>P</th></tr></thead><tbody>${top.map((p,i)=>`<tr><td>${i+1}</td><td><b>${p.name}</b></td><td>${p.team}</td><td>${p.goals}</td><td>${p.assists}</td><td><b>${p.points}</b></td></tr>`).join('')}</tbody></table>`;
+}
+function renderTeams(){
+ document.getElementById('teamsGrid').innerHTML=DATA.teams_local.map(t=>`<div class="card"><h3>${t}</h3><span class="tag">Göteborgsområdet</span><p class="small">Spelare visas endast när de kan verifieras från Min Fotboll.</p></div>`).join('');
+}
+function renderSeries(){
+ let out='';
+ DATA.series.forEach(s=>{
+   const stats=DATA.standings[s.name]||[];
+   const rows=s.teams.map((team,i)=>{
+     const r=stats.find(x=>x.team===team)||{gp:"—",w:"—",d:"—",l:"—",gf:"—",ga:"—",gd:"—",p:"—"};
+     return `<tr class="${DATA.teams_local.includes(team)?'rowlocal':''}"><td>${i+1}</td><td>${team}</td><td>${r.gp}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf}-${r.ga}</td><td>${r.gd}</td><td><b>${r.p}</b></td></tr>`;
+   }).join('');
+   out+=`<div class="card" style="margin-bottom:14px"><h2>${s.name}</h2><table><thead><tr><th>#</th><th>Lag</th><th>MS</th><th>V</th><th>O</th><th>F</th><th>GM-IM</th><th>+/-</th><th>P</th></tr></thead><tbody>${rows}</tbody></table><p class="small">Alla lag i serien visas. Göteborgslag är markerade. MS = matcher spelade • GM-IM = gjorda-insläppta • +/- = målskillnad • P = poäng.</p></div>`;
+ });
+ document.getElementById('seriesGrid').innerHTML=out;
+}
+function show(id,b){document.querySelectorAll('main>section').forEach(x=>x.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active')}
+renderPlayers();renderLeaderboard();renderTeams();renderSeries();
+</script></body></html>
